@@ -1,0 +1,18 @@
+package com.bromstargames.tcpclient;
+
+/**
+ * Created by User on 2017-05-19.
+ */
+
+
+public class Function
+{
+
+    String name;
+    public void execute(){}
+    public Function(String name)
+    {
+        this.name = name;
+
+    }
+}
