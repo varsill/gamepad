@@ -1,0 +1,107 @@
+package com.bromstargames.tcpclient;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
+import android.provider.Settings;
+import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.PasswordAuthentication;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by User on 2017-05-16.
+ */
+
+public class NetworkScanner extends AsyncTask <Void , String, Void> {
+
+    WifiManager wifi;
+    static final String SUBNET = "191.168.1.";
+    static final int START =  100;
+    static final int END = 255;
+    String host;
+    Context context;
+    static final int timeout = 500;
+    String info;
+    public ArrayList<String> list;
+    public ArrayAdapter<String> adapter;
+    public NetworkScanner(ListView listViewIp, Context context)
+    {
+
+       this.context=context;
+
+        wifi=(WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+        list = new ArrayList<String>();
+       // list.add("xdd");
+        adapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, android.R.id.text1, list);
+        listViewIp.setAdapter(adapter);
+    }
+
+    protected void onPreExecute()
+    {
+
+            adapter.clear();
+           list.clear();
+
+    }
+    protected Void doInBackground(Void...params)
+    {
+        try {
+            if (!wifi.isWifiEnabled()) {
+                Toast.makeText(context, "You are not connected to wifi!", Toast.LENGTH_LONG);
+                context.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                return null;
+            }
+        }catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+            for(int i = START; i<=END; i++)
+            {
+                if(isCancelled()) return null;
+                host  = SUBNET + i;
+                try
+                {
+                    InetAddress address = InetAddress.getByName(host);
+                    Log.d("ae14", host);
+                    if(address.isReachable(timeout))
+                    {
+                    //    info = address.toString();
+                        if(host!=null) publishProgress(host);
+                    }
+
+
+                }catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+        Toast.makeText(context, "Discovery finished!", Toast.LENGTH_SHORT).show();
+       return null;
+    }
+    protected void onProgressUpdate(String...values)
+    {
+
+        Log.d("ELO14", "xd"+values[0]);
+        adapter.add(values[0]);
+        adapter.notifyDataSetInvalidated();
+        adapter.notifyDataSetChanged();
+
+
+    }
+
+
+
+
+
+
+}
