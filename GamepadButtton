@@ -1,0 +1,48 @@
+package com.bromstargames.tcpclient;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.res.Resources;
+import android.widget.Button;
+
+import java.util.List;
+
+import static java.security.AccessController.getContext;
+
+/**
+ * Created by User on 2017-05-18.
+ */
+public class GamepadButton extends GamepadObject {
+
+    Button btn;
+
+    GamepadButton(String name, Activity activity) {
+        super(name, activity);
+
+        Resources res = activity.getApplicationContext().getResources();
+        int id = res.getIdentifier(name, null, null);
+        btn = (Button) activity.findViewById(id);
+        add(new Function("show") {
+            @Override
+            public void execute() {
+                super.execute();
+                //blelelelelelele
+
+
+            }
+        });
+        add(new Function("change_text")
+        {
+        @Override
+            public void execute()
+        {
+            super.execute();
+            //jsjjsjsjsjj rest of the code
+        }
+        });
+
+
+
+
+    }
+}
