@@ -1,0 +1,82 @@
+package com.bromstargames.tcpclient;
+/*
+import android.net.nsd.NsdManager;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+
+import java.io.IOException;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+       // TCPClient net = new TCPClient("169.254.123.205", 443);
+       // try {
+       //     net.connect();
+       /// net.send("Hello, it's me, android!");
+      //      net.disconnect();
+     ///   }catch(IOException e)
+    //    {
+     //e.printStackTrace();
+    //    }
+        NsdHelper manager=new NsdHelper(getApplicationContext());
+        manager.initializeNsd();
+
+        manager.discoverServices();
+    }
+}
+*/
+
+import android.content.Context;
+import android.graphics.Color;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+
+    private Button btnScan;
+    public ListView listViewIp;
+    public NetworkScanner networkScanner;
+    public ArrayList<String> ipList;
+    ArrayAdapter<String> adapter;
+    Context context;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        context=getApplicationContext();
+        btnScan = (Button) findViewById(R.id.scan);
+        listViewIp = (ListView) findViewById(R.id.listviewip);
+        listViewIp.setBackgroundColor(Color.CYAN);
+      //  ipList = new ArrayList<String>();
+       // adapter = new ArrayAdapter<String>(this,
+         //       android.R.layout.simple_list_item_1, android.R.id.text1, ipList);
+        //listViewIp.setAdapter(adapter);
+      // Toast.makeText(MainActivity.this, "Scan IP...", Toast.LENGTH_LONG).show();
+        networkScanner = new NetworkScanner(listViewIp, getApplicationContext());
+        btnScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                networkScanner.cancel(true);
+                networkScanner = new NetworkScanner(listViewIp, getApplicationContext());
+                networkScanner.execute();
+            }
+        });
+
+
+    }
+
+}
