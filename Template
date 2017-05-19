@@ -1,0 +1,103 @@
+package com.bromstargames.tcpclient;
+
+import android.app.Activity;
+import android.content.pm.ActivityInfo;
+import android.view.animation.AccelerateInterpolator;
+
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * Created by User on 2017-05-18.
+ */
+
+public class Template {
+    static final String FINISHED_INITIALIZING = "f_i";
+    private TCPClient tcp = new TCPClient(" ", 0);
+    List<GamepadObject> list;
+    String info;
+    String initializers[];
+    Activity activity;
+    public int initialize(Activity activity) {
+        try {
+            this.activity = activity;
+            tcp = new TCPClient("2faf", 131);
+            tcp.connect();
+            do {
+                info += tcp.ReadInfo();
+            } while (info != FINISHED_INITIALIZING);
+            initializers = info.split(" ");
+            List<String>initial= Arrays.asList(initializers);
+            int i = 0;
+            while(i<initial.size())
+            {
+
+                if(initial.get(i) =="BUTTON")
+                {
+                    list.add(new GamepadButton(initial.get(i+1), activity));
+
+                }
+                //if(initial.get(i) =="SOMETHING_ELSE"
+
+
+
+
+
+
+
+
+
+                //if(initial.get(i) =="AND SOMETHING_ELSE"
+
+
+
+
+
+
+
+
+
+                //if(initial.get(i) =="AND SOMETHING_ELSE!"
+
+                i=i+2;
+            }
+            Run();
+
+
+        } catch (Exception e) {
+
+
+            e.printStackTrace();
+            return 0;
+        }
+        return 1;
+    }
+
+
+   private void Run()
+    {
+        do {
+
+
+        }while(tcp.isConnected());
+        tcp.disconnect();
+    }
+    private boolean cast(String s1, String s2)
+    {
+        for(int i =0; i<list.size(); i++)
+        {
+            if(list.get(i).name==s1)
+            {
+                return list.get(i).castFunction(s2);
+            }
+        }
+        return false;
+    }
+
+}
+
+
