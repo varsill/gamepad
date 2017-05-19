@@ -1,0 +1,174 @@
+package com.bromstargames.tcpclient;
+
+import android.util.Log;
+import java.io.*;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.util.List;
+
+
+public class TCPClient {
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    public final static String NMI = "NO_MORE_INFOS";
+   private String ip;
+  private  int port;
+  private  Socket  socket;
+ private   PrintWriter to_send;
+private    BufferedReader to_receive;
+private    boolean mRun;
+    private String to_be_sent;
+private    List<String> infos;
+
+
+
+
+    public   TCPClient(String ip, int port)
+    {
+         this.ip=ip;
+        this.port=port;
+
+    }
+
+
+
+
+    private void initialize() throws IOException {
+        try {
+
+            if(socket==null) {
+                InetAddress serverAddr = InetAddress.getByName(ip);
+
+                    socket = new Socket(serverAddr, port);
+
+
+
+
+                try
+                {
+
+                    if(socket.isConnected()){ Log.d(TAG, "connected");}
+                    to_send = new PrintWriter(socket.getOutputStream());
+                    to_receive = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                }catch (IOException e)
+                {
+
+                    e.printStackTrace();
+                }
+
+            }
+        }catch(IOException e)
+        {
+
+            e.printStackTrace();
+        }
+    }
+
+    public void disconnect()
+    {
+        if(socket!=null)
+        {
+            if(socket.isConnected())
+            {
+                try
+                {
+                    to_receive.close();
+                    to_send.close();
+                    socket.close();
+                    mRun=false;
+                }catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+
+    private void send(){
+        try {
+
+
+            initialize();
+            if(to_be_sent!=null) {
+                if (to_send != null) {
+                    to_send.println(to_be_sent);
+                    to_send.flush();
+                }
+            }
+        }catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+    public void send(String s)
+    {
+        to_be_sent=s;
+    }
+
+    private void  receive(){
+    try {
+        String message = "";
+        String msg = "";
+        int charsRead = 0;
+        char[] buffer = new char[1024];
+
+        while (to_receive!=null &&( (charsRead = to_receive.read(buffer)) != -1)) {
+            msg = new String(buffer).substring(0, charsRead);
+            message+=msg;
+            if(msg.indexOf(" ")==-1||message.length()>32) break;
+        }
+        if(infos!=null) {
+            infos.add(message);
+        }
+    }
+         catch (IOException e) {
+           e.printStackTrace();
+         }
+    }
+
+    public void connect()
+    {
+
+
+
+            new Thread(new Runnable() {
+                @Override
+                public void run()  {
+                    try {
+                        initialize();
+                        mRun=true;
+
+                        while (mRun&&socket.isConnected())
+                        {
+                            send();
+                            receive();
+                        }
+                    }catch(IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+
+    }
+    public String ReadInfo()
+    {
+        String bufor = "";
+        if(infos.size()!=0)
+        {
+            bufor = (String)infos.get(0);
+            infos.remove(0);
+            return bufor;
+        }
+        return NMI; //no more infos
+    }
+    public boolean isConnected()
+    {
+        return socket.isConnected();
+    }
+
+}
